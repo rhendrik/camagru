@@ -1,0 +1,13 @@
+#this will reroute all requests to index.php
+
+RewriteEngine On
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+
+#Skip whatever we need to skip
+
+RewriteCond $1 !^(config|core|css|js|fonts)
+
+#anything that we didn't specify to skip will be sent to index.php, giving us a cleaner URL
+RewriteRule ^(.+)$ index.php/$1 [L]
