@@ -6,6 +6,7 @@ class View {
 	public funtion __construct(){
 	}
 
+	//setters
 	public function render($viewName){
 		$viewArray = explode('/', $viewName);
 		$viewString = implode(DS, $viewArray);
@@ -17,8 +18,25 @@ class View {
 		}
 	}
 
-	public funtion content($type){
-	if($type == 'head'){
+	public function content($type){
+		if($type == 'head'){
+			return $this->_head;
+		} elseif ($type == 'body'){
+			return $this->_body;
+		}
+		return false;
 	}
+
+	//getters
+	public function start($type){
+	}
+
+	public function end(){
+	}
+
+	public function setSiteTitle($title){
+	}
+
+	public function setLayout($path){
 	}
 }
