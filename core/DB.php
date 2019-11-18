@@ -19,4 +19,8 @@ class DB {
 		 }
 		 return self::$_instance;
 	 }
+
+	 public function query($sql, $params = []) {
+		 $this->_error = false;
+	 }
 }
