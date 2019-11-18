@@ -53,6 +53,6 @@ class View {
 		}
 
 		public function setLayout($path){
-				$this->_siteLayout = $path;
+				$this->_Layout = $path;
 		}
 }
