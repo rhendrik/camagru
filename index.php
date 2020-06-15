@@ -1,25 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>camagru</title>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.0/css/bulma.min.css">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-	<!-- header -->
-	<header class="section">
-		<div class="hero">
-			<h1 class="hero-title has-text-centered">Camagru</h1>
-		</div>
-	</header>
+<?php
+if (!isset($_SESSION['logged_user'])) {
+  require_once('config/setup.php');
+  header("Location: pages/home.php"); // redirection vers page connexion
+}
+else
+  header("Location: pages/webcam.php"); // redirection vers page webcam
 
-	<!-- body -->
-
-	<!-- footer -->
-	<footer>
-		<div class="hero">
-			<h1 class="hero-body has-text-centered">capture something</h1>	
-		</div>
-	</footer>
-</body>
-</html>
+ ?>
