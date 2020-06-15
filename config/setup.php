@@ -1,37 +1,114 @@
+
 <?php
-require('database.php');
+	session_start();
+	require('database.php');
 
-// Database structure creation via PDO instance
-$db->query("CREATE TABLE IF NOT EXISTS users
-					(
-						user_id INT(6) PRIMARY KEY AUTO_INCREMENT NOT NULL,
-						login VARCHAR(40) UNIQUE NOT NULL,
-						password VARCHAR(255) NOT NULL,
-						email VARCHAR(128) UNIQUE NOT NULL,
-						confirm_hash VARCHAR(255) NOT NULL
-					)");
+	// Build DB
+	try {
+		$sql = "CREATE DATABASE IF NOT EXISTS $DB_NAME";
+		$conn = new PDO($DB_DSN, $DB_USER, $DB_PASSWORD);
+		$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		$conn->exec($sql);
+		$_SESSION['created'] = 'created database';
+		echo "nope<br>";
+	}
+	catch (PDOException $e){
+		echo $sql ."<br>". $e->getMessage();
+	}
 
-$db->query("CREATE TABLE IF NOT EXISTS images
-					(
-						img_id INT(6) PRIMARY KEY AUTO_INCREMENT NOT NULL,
-						link TEXT NOT NULL,
-						pub_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-						author_id INT(6) NOT NULL,
-						nb_likes INT(6) NOT NULL DEFAULT 0
-					)");
+	require('pdo_connection.php');
 
-$db->query("CREATE TABLE IF NOT EXISTS comments
-					(
-						com_id INT(6) PRIMARY KEY AUTO_INCREMENT NOT NULL,
-						img_id INT(6) NOT NULL,
-						author_id INT(6) NOT NULL,
-						content MEDIUMTEXT NOT NULL
-					)");
+	// Build Table 'Users'
+	try {
+		$sql = "CREATE TABLE IF NOT EXISTS users (
+			`id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+			`firstname` VARCHAR(100) NOT NULL,
+			`lastname` VARCHAR(100) NOT NULL,
+			`username` VARCHAR(100) NOT NULL UNIQUE,
+			`email` VARCHAR(100) NOT NULL UNIQUE,
+			`encrypt` VARCHAR(200) NOT NULL,
+			`verified` BOOLEAN NOT NULL,
+			`notifications` BOOLEAN NOT NULL,
+			`token` VARCHAR(100) NOT NULL UNIQUE
+		)";
+		$conn->exec($sql);
+		echo "more nope<br>";
+	}
+	catch (PDOException $e){
+		echo $sql ."<br>". $e->getMessage();
+	}
 
-$db->query("CREATE TABLE IF NOT EXISTS likes
-					(
-						like_id INT(6) PRIMARY KEY AUTO_INCREMENT NOT NULL,
-						img_id INT(6) NOT NULL,
-						author_id INT(6) NOT NULL
-					)");
-}
+	// Create default users
+	try {
+		$password = 'I am 100% a Dinosaur';
+		$lemail = 'iam@dinosaur.com';
+		$firsty = 'I';
+		$lasty = 'Am';
+		$usery = 'Dinosaur';
+		$token = md5($usery);
+		$encrypt = password_hash($password, PASSWORD_BCRYPT);
+		$sql = "INSERT INTO users(`firstname`, `lastname`, `username`, `email`, `encrypt`, `verified`, `notifications`, `token`)
+		VALUES (:firsty, :lasty, :usery, :lemail, :encrypt, 1, 1, :token)";
+		$stmt = $conn->prepare($sql);
+		$stmt->bindParam(':firsty', $firsty);
+		$stmt->bindParam(':lasty', $lasty);
+		$stmt->bindParam(':usery', $usery);
+		$stmt->bindParam(':lemail', $lemail);
+		$stmt->bindParam(':encrypt', $encrypt);
+		$stmt->bindParam(':token', $token);
+		$stmt->execute();
+	}
+	catch (PDOException $e){
+		echo $sql ."<br>". $e->getMessage();
+	}
+
+	// Build table 'Images'
+	try {
+		$sql = "CREATE TABLE IF NOT EXISTS images (
+			`id` INT(250) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+			`imagename` VARCHAR(200) NOT NULL,
+			`username` VARCHAR (100) NOT NULL,
+			`email` VARCHAR(200) NOT NULL,
+			`created` VARCHAR(200) NOT NULL
+		)";
+		$conn->exec($sql);
+		echo "Extremely functional shit<br>";
+		
+	}
+	catch (PDOException $e){
+		echo $sql ."<br>". $e->getMessage();
+	}
+
+	// Build table 'Comments'
+	try {
+		$sql = "CREATE TABLE IF NOT EXISTS comments (
+			`id` INT(250) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+			`postedby` VARCHAR(200),
+			`commentedby` VARCHAR(200),
+			`comment` VARCHAR(10000),
+			`post_id` INT NOT NULL
+		)";
+		$conn->exec($sql);
+		echo "Amazingly functional shit<br>";
+	}
+	catch(PDOException $e) {
+		echo $e->getMessage();
+	}
+
+	// Build table 'Likes'
+	try {
+		$sql = "CREATE TABLE IF NOT EXISTS likes (
+			`user_id` INT NOT NULL,
+			`post_id` INT NOT NULL,
+			`username` VARCHAR(100) NOT NULL,
+			UNIQUE KEY (`user_id`, `post_id`)
+		)";
+		$conn->exec($sql);
+		echo "Phenomenally functional shit<br>";
+		header("Location: ../index.php");
+	}
+	catch(PDOException $e) {
+		echo $e->getMessage();
+	}
+	$conn = null;
+?>
